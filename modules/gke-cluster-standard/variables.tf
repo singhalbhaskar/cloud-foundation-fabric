@@ -27,7 +27,7 @@ variable "access_config" {
         endpoint_subnetwork = optional(string)
         global_access       = optional(bool, true)
       }))
-    }))
+    }), null)
     master_ipv4_cidr_block = optional(string)
     private_nodes          = optional(bool, true)
   })
@@ -395,7 +395,7 @@ variable "node_config" {
     service_account               = optional(string)
     tags                          = optional(list(string))
     workload_metadata_config_mode = optional(string)
-    kubelet_readonly_port_enabled = optional(bool, true)
+    kubelet_readonly_port_enabled = optional(bool, false)
   })
   default  = {}
   nullable = false
