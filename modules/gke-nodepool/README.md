@@ -221,3 +221,39 @@ module "cluster-1-nodepool-dws" {
 | [service_account_email](outputs.tf#L27) | Service account email. |  |
 | [service_account_iam_email](outputs.tf#L32) | Service account email. |  |
 <!-- END TFDOC -->
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| cluster\_id | Cluster id. Optional, but providing cluster\_id is recommended to prevent cluster misconfiguration in some of the edge cases. | `string` | `null` | no |
+| cluster\_name | Cluster name. | `string` | n/a | yes |
+| gke\_version | Kubernetes nodes version. Ignored if auto\_upgrade is set in management\_config. | `string` | `null` | no |
+| k8s\_labels | Kubernetes labels applied to each node. | `map(string)` | `{}` | no |
+| labels | The resource labels to be applied each node (vm). | `map(string)` | `{}` | no |
+| location | Cluster location. | `string` | n/a | yes |
+| max\_pods\_per\_node | Maximum number of pods per node. | `number` | `null` | no |
+| name | Optional nodepool name. | `string` | `null` | no |
+| network\_config | Network configuration. | <pre>object({<br>    enable_private_nodes = optional(bool, true)<br>    pod_range = optional(object({<br>      cidr   = optional(string)<br>      create = optional(bool, false)<br>      name   = optional(string)<br>    }), {})<br>    additional_node_network_configs = optional(list(object({<br>      network    = string<br>      subnetwork = string<br>    })), [])<br>    additional_pod_network_configs = optional(list(object({<br>      subnetwork          = string<br>      secondary_pod_range = string<br>      max_pods_per_node   = string<br>    })), [])<br>    total_egress_bandwidth_tier        = optional(string)<br>    pod_cidr_overprovisioning_disabled = optional(bool, false)<br>  })</pre> | <pre>{<br>  "enable_private_nodes": true<br>}</pre> | no |
+| node\_config | Node-level configuration. | <pre>object({<br>    boot_disk_kms_key   = optional(string)<br>    disk_size_gb        = optional(number)<br>    disk_type           = optional(string, "pd-balanced")<br>    ephemeral_ssd_count = optional(number)<br>    gcfs                = optional(bool, false)<br>    guest_accelerator = optional(object({<br>      count = number<br>      type  = string<br>      gpu_driver = optional(object({<br>        version                    = string<br>        partition_size             = optional(string)<br>        max_shared_clients_per_gpu = optional(number)<br>      }))<br>    }))<br>    local_nvme_ssd_count = optional(number)<br>    gvnic                = optional(bool, false)<br>    image_type           = optional(string)<br>    kubelet_config = optional(object({<br>      cpu_manager_policy   = string<br>      cpu_cfs_quota        = optional(bool)<br>      cpu_cfs_quota_period = optional(string)<br>      pod_pids_limit       = optional(number)<br>    }))<br>    linux_node_config = optional(object({<br>      sysctls     = optional(map(string))<br>      cgroup_mode = optional(string)<br>    }))<br>    local_ssd_count       = optional(number)<br>    machine_type          = optional(string)<br>    metadata              = optional(map(string))<br>    min_cpu_platform      = optional(string)<br>    preemptible           = optional(bool)<br>    sandbox_config_gvisor = optional(bool)<br>    shielded_instance_config = optional(object({<br>      enable_integrity_monitoring = optional(bool)<br>      enable_secure_boot          = optional(bool)<br>    }))<br>    spot                          = optional(bool)<br>    workload_metadata_config_mode = optional(string)<br>  })</pre> | `{}` | no |
+| node\_count | Number of nodes per instance group. Initial value can only be changed by recreation, current is ignored when autoscaling is used. | <pre>object({<br>    current = optional(number)<br>    initial = number<br>  })</pre> | <pre>{<br>  "initial": 1<br>}</pre> | no |
+| node\_locations | Node locations. | `list(string)` | `null` | no |
+| nodepool\_config | Nodepool-level configuration. | <pre>object({<br>    autoscaling = optional(object({<br>      location_policy = optional(string)<br>      max_node_count  = optional(number)<br>      min_node_count  = optional(number)<br>      use_total_nodes = optional(bool, false)<br>    }))<br>    management = optional(object({<br>      auto_repair  = optional(bool)<br>      auto_upgrade = optional(bool)<br>    }))<br>    placement_policy = optional(object({<br>      type         = string<br>      policy_name  = optional(string)<br>      tpu_topology = optional(string)<br>    }))<br>    queued_provisioning = optional(bool, false)<br>    upgrade_settings = optional(object({<br>      max_surge       = number<br>      max_unavailable = number<br>      strategy        = optional(string)<br>      blue_green_settings = optional(object({<br>        node_pool_soak_duration = optional(string)<br>        standard_rollout_policy = optional(object({<br>          batch_percentage    = optional(number)<br>          batch_node_count    = optional(number)<br>          batch_soak_duration = optional(string)<br>        }))<br>      }))<br>    }))<br>  })</pre> | `null` | no |
+| project\_id | Cluster project id. | `string` | n/a | yes |
+| reservation\_affinity | Configuration of the desired reservation which instances could take capacity from. | <pre>object({<br>    consume_reservation_type = string<br>    key                      = optional(string)<br>    values                   = optional(list(string))<br>  })</pre> | `null` | no |
+| service\_account | Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used. | <pre>object({<br>    create       = optional(bool, false)<br>    email        = optional(string)<br>    oauth_scopes = optional(list(string))<br>    display_name = optional(string)<br>  })</pre> | <pre>{<br>  "create": false<br>}</pre> | no |
+| sole\_tenant\_nodegroup | Sole tenant node group. | `string` | `null` | no |
+| tags | Network tags applied to nodes. | `list(string)` | `null` | no |
+| taints | Kubernetes taints applied to all nodes. | <pre>map(object({<br>    value  = string<br>    effect = string<br>  }))</pre> | `{}` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| id | Fully qualified nodepool id. |
+| name | Nodepool name. |
+| service\_account\_email | Service account email. |
+| service\_account\_iam\_email | Service account email. |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

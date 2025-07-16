@@ -123,7 +123,7 @@ variable "enable_features" {
       enable_network_egress_metering       = optional(bool)
       enable_resource_consumption_metering = optional(bool)
     }))
-    service_external_ips = optional(bool, true)
+    service_external_ips = optional(bool, false)
     tpu                  = optional(bool, false)
     upgrade_notifications = optional(object({
       topic_id = optional(string)

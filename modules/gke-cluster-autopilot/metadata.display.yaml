@@ -1,0 +1,87 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  name: gke-autopilot-cluster-module-display
+  annotations:
+    config.kubernetes.io/local-config: "true"
+spec:
+  info:
+    title: GKE Autopilot cluster module
+    source:
+      sourceType: git
+      repo: github.com/singhalbhaskar/cloud-foundation-fabric.git
+      dir: /modules/gke-cluster-autopilot
+  ui:
+    input:
+      variables:
+        access_config:
+          name: access_config
+          title: Access Config
+        backup_configs:
+          name: backup_configs
+          title: Backup Configs
+        deletion_protection:
+          name: deletion_protection
+          title: Deletion Protection
+        description:
+          name: description
+          title: Description
+        enable_addons:
+          name: enable_addons
+          title: Enable Addons
+        enable_features:
+          name: enable_features
+          title: Enable Features
+        issue_client_certificate:
+          name: issue_client_certificate
+          title: Issue Client Certificate
+        labels:
+          name: labels
+          title: Labels
+        location:
+          name: location
+          title: Location
+        logging_config:
+          name: logging_config
+          title: Logging Config
+        maintenance_config:
+          name: maintenance_config
+          title: Maintenance Config
+        min_master_version:
+          name: min_master_version
+          title: Min Master Version
+        monitoring_config:
+          name: monitoring_config
+          title: Monitoring Config
+        name:
+          name: name
+          title: Name
+        node_config:
+          name: node_config
+          title: Node Config
+        node_locations:
+          name: node_locations
+          title: Node Locations
+        project_id:
+          name: project_id
+          title: Project Id
+        release_channel:
+          name: release_channel
+          title: Release Channel
+        vpc_config:
+          name: vpc_config
+          title: Vpc Config

@@ -1,0 +1,224 @@
+# Copyright 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: blueprints.cloud.google.com/v1alpha1
+kind: BlueprintMetadata
+metadata:
+  name: gke-nodepool-module
+  annotations:
+    config.kubernetes.io/local-config: "true"
+spec:
+  info:
+    title: GKE nodepool module
+    source:
+      sourceType: git
+      repo: github.com/singhalbhaskar/cloud-foundation-fabric.git
+      dir: /modules/gke-nodepool
+    version: 41.0.0
+    actuationTool:
+      flavor: Terraform
+      version: ">= 1.11.4"
+    description: {}
+  content: {}
+  interfaces:
+    variables:
+      - name: cluster_id
+        description: Cluster id. Optional, but providing cluster_id is recommended to prevent cluster misconfiguration in some of the edge cases.
+        varType: string
+      - name: cluster_name
+        description: Cluster name.
+        varType: string
+        required: true
+      - name: gke_version
+        description: Kubernetes nodes version. Ignored if auto_upgrade is set in management_config.
+        varType: string
+      - name: k8s_labels
+        description: Kubernetes labels applied to each node.
+        varType: map(string)
+        defaultValue: {}
+      - name: labels
+        description: The resource labels to be applied each node (vm).
+        varType: map(string)
+        defaultValue: {}
+      - name: location
+        description: Cluster location.
+        varType: string
+        required: true
+      - name: max_pods_per_node
+        description: Maximum number of pods per node.
+        varType: number
+      - name: name
+        description: Optional nodepool name.
+        varType: string
+      - name: network_config
+        description: Network configuration.
+        varType: |-
+          object({
+              enable_private_nodes = optional(bool, true)
+              pod_range = optional(object({
+                cidr   = optional(string)
+                create = optional(bool, false)
+                name   = optional(string)
+              }), {})
+              additional_node_network_configs = optional(list(object({
+                network    = string
+                subnetwork = string
+              })), [])
+              additional_pod_network_configs = optional(list(object({
+                subnetwork          = string
+                secondary_pod_range = string
+                max_pods_per_node   = string
+              })), [])
+              total_egress_bandwidth_tier        = optional(string)
+              pod_cidr_overprovisioning_disabled = optional(bool, false)
+            })
+        defaultValue:
+          enable_private_nodes: true
+      - name: node_config
+        description: Node-level configuration.
+        varType: |-
+          object({
+              boot_disk_kms_key   = optional(string)
+              disk_size_gb        = optional(number)
+              disk_type           = optional(string, "pd-balanced")
+              ephemeral_ssd_count = optional(number)
+              gcfs                = optional(bool, false)
+              guest_accelerator = optional(object({
+                count = number
+                type  = string
+                gpu_driver = optional(object({
+                  version                    = string
+                  partition_size             = optional(string)
+                  max_shared_clients_per_gpu = optional(number)
+                }))
+              }))
+              local_nvme_ssd_count = optional(number)
+              gvnic                = optional(bool, false)
+              image_type           = optional(string)
+              kubelet_config = optional(object({
+                cpu_manager_policy   = string
+                cpu_cfs_quota        = optional(bool)
+                cpu_cfs_quota_period = optional(string)
+                pod_pids_limit       = optional(number)
+              }))
+              linux_node_config = optional(object({
+                sysctls     = optional(map(string))
+                cgroup_mode = optional(string)
+              }))
+              local_ssd_count       = optional(number)
+              machine_type          = optional(string)
+              metadata              = optional(map(string))
+              min_cpu_platform      = optional(string)
+              preemptible           = optional(bool)
+              sandbox_config_gvisor = optional(bool)
+              shielded_instance_config = optional(object({
+                enable_integrity_monitoring = optional(bool)
+                enable_secure_boot          = optional(bool)
+              }))
+              spot                          = optional(bool)
+              workload_metadata_config_mode = optional(string)
+            })
+        defaultValue: {}
+      - name: node_count
+        description: Number of nodes per instance group. Initial value can only be changed by recreation, current is ignored when autoscaling is used.
+        varType: |-
+          object({
+              current = optional(number)
+              initial = number
+            })
+        defaultValue:
+          initial: 1
+      - name: node_locations
+        description: Node locations.
+        varType: list(string)
+      - name: nodepool_config
+        description: Nodepool-level configuration.
+        varType: |-
+          object({
+              autoscaling = optional(object({
+                location_policy = optional(string)
+                max_node_count  = optional(number)
+                min_node_count  = optional(number)
+                use_total_nodes = optional(bool, false)
+              }))
+              management = optional(object({
+                auto_repair  = optional(bool)
+                auto_upgrade = optional(bool)
+              }))
+              placement_policy = optional(object({
+                type         = string
+                policy_name  = optional(string)
+                tpu_topology = optional(string)
+              }))
+              queued_provisioning = optional(bool, false)
+              upgrade_settings = optional(object({
+                max_surge       = number
+                max_unavailable = number
+                strategy        = optional(string)
+                blue_green_settings = optional(object({
+                  node_pool_soak_duration = optional(string)
+                  standard_rollout_policy = optional(object({
+                    batch_percentage    = optional(number)
+                    batch_node_count    = optional(number)
+                    batch_soak_duration = optional(string)
+                  }))
+                }))
+              }))
+            })
+      - name: project_id
+        description: Cluster project id.
+        varType: string
+        required: true
+      - name: reservation_affinity
+        description: Configuration of the desired reservation which instances could take capacity from.
+        varType: |-
+          object({
+              consume_reservation_type = string
+              key                      = optional(string)
+              values                   = optional(list(string))
+            })
+      - name: service_account
+        description: Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used.
+        varType: |-
+          object({
+              create       = optional(bool, false)
+              email        = optional(string)
+              oauth_scopes = optional(list(string))
+              display_name = optional(string)
+            })
+        defaultValue:
+          create: false
+      - name: sole_tenant_nodegroup
+        description: Sole tenant node group.
+        varType: string
+      - name: tags
+        description: Network tags applied to nodes.
+        varType: list(string)
+      - name: taints
+        description: Kubernetes taints applied to all nodes.
+        varType: |-
+          map(object({
+              value  = string
+              effect = string
+            }))
+        defaultValue: {}
+    outputs:
+      - name: id
+        description: Fully qualified nodepool id.
+      - name: name
+        description: Nodepool name.
+      - name: service_account_email
+        description: Service account email.
+      - name: service_account_iam_email
+        description: Service account email.

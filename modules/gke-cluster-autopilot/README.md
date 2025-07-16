@@ -304,3 +304,46 @@ module "cluster-1" {
 | [self_link](outputs.tf#L67) | Cluster self link. | ✓ |
 | [workload_identity_pool](outputs.tf#L73) | Workload identity pool. |  |
 <!-- END TFDOC -->
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| access\_config | Control plane endpoint and nodes access configurations. | <pre>object({<br>    dns_access = optional(bool, true)<br>    ip_access = optional(object({<br>      authorized_ranges                              = optional(map(string))<br>      disable_public_endpoint                        = optional(bool)<br>      gcp_public_cidrs_access_enabled                = optional(bool)<br>      private_endpoint_authorized_ranges_enforcement = optional(bool)<br>      private_endpoint_config = optional(object({<br>        endpoint_subnetwork = optional(string)<br>        global_access       = optional(bool, true)<br>      }))<br>    }))<br>    private_nodes          = optional(bool, true)<br>    master_ipv4_cidr_block = optional(string)<br>  })</pre> | `{}` | no |
+| backup\_configs | Configuration for Backup for GKE. | <pre>object({<br>    enable_backup_agent = optional(bool, false)<br>    backup_plans = optional(map(object({<br>      encryption_key                    = optional(string)<br>      include_secrets                   = optional(bool, true)<br>      include_volume_data               = optional(bool, true)<br>      labels                            = optional(map(string))<br>      namespaces                        = optional(list(string))<br>      region                            = string<br>      schedule                          = string<br>      retention_policy_days             = optional(string)<br>      retention_policy_lock             = optional(bool, false)<br>      retention_policy_delete_lock_days = optional(string)<br>    })), {})<br>  })</pre> | `{}` | no |
+| deletion\_protection | Whether or not to allow Terraform to destroy the cluster. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the cluster will fail. | `bool` | `true` | no |
+| description | Cluster description. | `string` | `null` | no |
+| enable\_addons | Addons enabled in the cluster (true means enabled). | <pre>object({<br>    cloudrun         = optional(bool, false)<br>    config_connector = optional(bool, false)<br>    istio = optional(object({<br>      enable_tls = bool<br>    }))<br>    kalm = optional(bool, false)<br>  })</pre> | `{}` | no |
+| enable\_features | Enable cluster-level features. Certain features allow configuration. | <pre>object({<br>    beta_apis            = optional(list(string))<br>    binary_authorization = optional(bool, false)<br>    cost_management      = optional(bool, true)<br>    dns = optional(object({<br>      additive_vpc_scope_dns_domain = optional(string)<br>      provider                      = optional(string)<br>      scope                         = optional(string)<br>      domain                        = optional(string)<br>    }))<br>    multi_networking = optional(bool, false)<br>    database_encryption = optional(object({<br>      state    = string<br>      key_name = string<br>    }))<br>    gateway_api           = optional(bool, false)<br>    groups_for_rbac       = optional(string)<br>    l4_ilb_subsetting     = optional(bool, false)<br>    mesh_certificates     = optional(bool)<br>    pod_security_policy   = optional(bool, false)<br>    secret_manager_config = optional(bool)<br>    security_posture_config = optional(object({<br>      mode               = string<br>      vulnerability_mode = string<br>    }))<br>    allow_net_admin = optional(bool, false)<br>    resource_usage_export = optional(object({<br>      dataset                              = string<br>      enable_network_egress_metering       = optional(bool)<br>      enable_resource_consumption_metering = optional(bool)<br>    }))<br>    service_external_ips = optional(bool, false)<br>    tpu                  = optional(bool, false)<br>    upgrade_notifications = optional(object({<br>      topic_id = optional(string)<br>    }))<br>    vertical_pod_autoscaling = optional(bool, false)<br>    enterprise_cluster       = optional(bool)<br>  })</pre> | `{}` | no |
+| issue\_client\_certificate | Enable issuing client certificate. | `bool` | `false` | no |
+| labels | Cluster resource labels. | `map(string)` | `null` | no |
+| location | Autopilot clusters are always regional. | `string` | n/a | yes |
+| logging\_config | Logging configuration. | <pre>object({<br>    enable_api_server_logs         = optional(bool, false)<br>    enable_scheduler_logs          = optional(bool, false)<br>    enable_controller_manager_logs = optional(bool, false)<br>  })</pre> | `{}` | no |
+| maintenance\_config | Maintenance window configuration. | <pre>object({<br>    daily_window_start_time = optional(string)<br>    recurring_window = optional(object({<br>      start_time = string<br>      end_time   = string<br>      recurrence = string<br>    }))<br>    maintenance_exclusions = optional(list(object({<br>      name       = string<br>      start_time = string<br>      end_time   = string<br>      scope      = optional(string)<br>    })))<br>  })</pre> | <pre>{<br>  "daily_window_start_time": "03:00",<br>  "maintenance_exclusion": [],<br>  "recurring_window": null<br>}</pre> | no |
+| min\_master\_version | Minimum version of the master, defaults to the version of the most recent official release. | `string` | `null` | no |
+| monitoring\_config | Monitoring configuration. System metrics collection cannot be disabled. Control plane metrics are optional. Kube state metrics are optional. Google Cloud Managed Service for Prometheus is enabled by default. | <pre>object({<br>    # Control plane metrics<br>    enable_api_server_metrics         = optional(bool, false)<br>    enable_controller_manager_metrics = optional(bool, false)<br>    enable_scheduler_metrics          = optional(bool, false)<br>    # Kube state metrics. Requires managed Prometheus. Requires provider version >= v4.82.0<br>    enable_daemonset_metrics   = optional(bool, false)<br>    enable_deployment_metrics  = optional(bool, false)<br>    enable_hpa_metrics         = optional(bool, false)<br>    enable_pod_metrics         = optional(bool, false)<br>    enable_statefulset_metrics = optional(bool, false)<br>    enable_storage_metrics     = optional(bool, false)<br>    enable_cadvisor_metrics    = optional(bool, false)<br>    # Google Cloud Managed Service for Prometheus. Autopilot clusters version >= 1.25 must have this on.<br>    enable_managed_prometheus = optional(bool, true)<br>  })</pre> | `{}` | no |
+| name | Cluster name. | `string` | n/a | yes |
+| node\_config | Configuration for nodes and nodepools. | <pre>object({<br>    boot_disk_kms_key             = optional(string)<br>    service_account               = optional(string)<br>    tags                          = optional(list(string))<br>    workload_metadata_config_mode = optional(string)<br>    kubelet_readonly_port_enabled = optional(bool, true)<br>  })</pre> | `{}` | no |
+| node\_locations | Zones in which the cluster's nodes are located. | `list(string)` | `[]` | no |
+| project\_id | Cluster project ID. | `string` | n/a | yes |
+| release\_channel | Release channel for GKE upgrades. Clusters created in the Autopilot mode must use a release channel. Choose between "RAPID", "REGULAR", and "STABLE". | `string` | `"REGULAR"` | no |
+| vpc\_config | VPC-level configuration. | <pre>object({<br>    disable_default_snat = optional(bool)<br>    network              = string<br>    subnetwork           = string<br>    secondary_range_blocks = optional(object({<br>      pods     = string<br>      services = string<br>    }))<br>    secondary_range_names = optional(object({<br>      pods     = optional(string)<br>      services = optional(string)<br>    }))<br>    additional_ranges = optional(list(string))<br>    stack_type        = optional(string)<br>  })</pre> | n/a | yes |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| ca\_certificate | Public certificate of the cluster (base64-encoded). |
+| cluster | Cluster resource. |
+| dns\_endpoint | Control plane DNS endpoint. |
+| endpoint | Cluster endpoint. |
+| id | Fully qualified cluster ID. |
+| location | Cluster location. |
+| master\_version | Master version. |
+| name | Cluster name. |
+| notifications | GKE Pub/Sub notifications topic. |
+| self\_link | Cluster self link. |
+| workload\_identity\_pool | Workload identity pool. |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->

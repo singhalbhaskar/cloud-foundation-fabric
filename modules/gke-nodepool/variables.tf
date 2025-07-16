@@ -65,7 +65,7 @@ variable "name" {
 variable "network_config" {
   description = "Network configuration."
   type = object({
-    enable_private_nodes = optional(bool)
+    enable_private_nodes = optional(bool, true)
     pod_range = optional(object({
       cidr   = optional(string)
       create = optional(bool, false)
@@ -83,7 +83,9 @@ variable "network_config" {
     total_egress_bandwidth_tier        = optional(string)
     pod_cidr_overprovisioning_disabled = optional(bool, false)
   })
-  default = null
+  default = {
+    enable_private_nodes = true
+  }
 }
 
 variable "node_config" {
@@ -228,7 +230,9 @@ variable "service_account" {
     oauth_scopes = optional(list(string))
     display_name = optional(string)
   })
-  default  = {}
+  default  = {
+    create = false
+  }
   nullable = false
 }
 
